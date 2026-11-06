@@ -1,0 +1,4389 @@
+:root {
+  --bg: #0f172a;
+  --panel: #16233a;
+  --panel-2: #1c2b45;
+  --line: #2b3a55;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --brand: #0d9488;
+  --brand-soft: #114b47;
+  --money: #f59e0b;
+  --money-soft: #4a3410;
+  --danger: #dc2626;
+  --ok: #16a34a;
+  --radius: 10px;
+}
+
+/* ===== v03 对齐：双主题。收银台深色专注，管理页浅色工作模式 =====
+   管理视图外层包 .page.light，通过覆盖 token 让全部组件自动切换浅色。 */
+.page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.light {
+  --bg: #f1f5f9;
+  --panel: #ffffff;
+  --panel-2: #f8fafc;
+  --line: #e2e8f0;
+  --text: #0f172a;
+  --muted: #64748b;
+  --brand-soft: #ccfbf1;
+  --money-soft: #fef3c7;
+  /* 对比度校准（v03 §A）：浅色页琥珀文字统一深琥珀 #b45309（浅底 ≥ 7:1） */
+  --money: #b45309;
+}
+
+/* 关键：.light 只换了 token，页面自身仍继承 body 已解析的 #E2E8F0。
+   未单独设色的文本（说明文字 / 空态描述 / label）会白底近白不可见，这里重新解析一次。 */
+.page.light {
+  color: var(--text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--brand);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+input {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.18);
+}
+
+.app {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  min-height: 600px;
+}
+
+/* v03 shell：左 64px 图标侧栏 + 右侧纵向（状态条 + 内容区） */
+.shell-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* v03 .nav64：64px 白底全高，条目 52px、图标 22px、active 青绿浅底 */
+.nav64 {
+  width: 64px;
+  flex: none;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 12px;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.nav64 .it {
+  width: 52px;
+  padding: 10px 0 8px;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #475569;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  line-height: 1.2;
+}
+
+.nav64 .it svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nav64 .it.on {
+  background: #ccfbf1;
+  color: #0f766e;
+  font-weight: 700;
+}
+
+.nav64 .it:hover:not(.on) {
+  background: #f8fafc;
+}
+
+/* 状态条（v03 .stbar：44px，左店名|收银员|班次，右状态胶囊） */
+.statusbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap; /* 页签收敛后仍有保障：任何视口都不换行、不重叠 */
+  gap: 12px;
+  height: 44px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  font-size: 13px;
+  overflow: hidden;
+}
+
+/* v03 口径：左段 gap 14，右段 gap 16 并靠右对齐 */
+.sb-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sb-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.statusbar .shop {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.statusbar .sep {
+  width: 1px;
+  height: 18px;
+  background: var(--line);
+  flex: none;
+}
+
+.statusbar .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background: var(--muted);
+}
+
+.dot.ok {
+  background: var(--ok);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.8);
+}
+
+.dot.bad {
+  background: var(--danger);
+}
+
+.dot.warn {
+  background: var(--money);
+}
+
+.statusbar .grow {
+  flex: 1;
+}
+
+/* 右侧状态胶囊（v03）：今日已收琥珀、待重打红色 badge、在线/打印绿点 */
+.sb-today {
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+/* v03 P2：今日已收 ¥1,286.00 用琥珀 700 */
+.sb-today b {
+  color: #fbbf24;
+  font-weight: 700;
+  margin-left: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 浅色状态条上琥珀要压暗，否则在白底上糊成一片 */
+.app.manage-mode .sb-today {
+  color: #475569;
+}
+
+.app.manage-mode .sb-today b {
+  color: #b45309;
+}
+
+/* v03 P2：◉同步 12:42 #93C5FD，蓝点脉冲 */
+.sb-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #93c5fd;
+  font-variant-numeric: tabular-nums;
+}
+
+.app.manage-mode .sb-sync {
+  color: #0369a1;
+}
+
+.statusbar .dot.sync {
+  background: #3b82f6;
+  animation: syncPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes syncPulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0);
+  }
+}
+
+.sb-queue {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.badge {
+  background: var(--danger);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 11px;
+  padding: 1px 7px;
+  font-weight: 700;
+}
+
+/* 管理页浅色顶栏（v03 .stbar.light）：白底 #475569 正文、门店名 #0F172A、激活青绿 */
+.app.manage-mode .statusbar {
+  background: #ffffff;
+  border-bottom-color: #e2e8f0;
+  /* 深色主题正文是 #E2E8F0，浅色顶栏必须整体改回 #475569，否则白底白字 */
+  color: #475569;
+}
+.app.manage-mode .statusbar .shop {
+  color: #0f172a;
+}
+.app.manage-mode .statusbar .sep {
+  background: #cbd5e1;
+}
+.app.manage-mode .statusbar .sb-user,
+.app.manage-mode .statusbar .sb-shift,
+.app.manage-mode .statusbar .sb-service,
+.app.manage-mode .statusbar .sb-printer {
+  color: #475569;
+}
+/* v03 .dot.off：琥珀空心点；浅色底上实心浅琥珀会糊成一片 */
+.app.manage-mode .statusbar .dot.warn {
+  background: transparent;
+  border: 1.5px solid #f59e0b;
+}
+.app.manage-mode .sb-today {
+  color: #b45309;
+}
+.app.manage-mode .tabs {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+.app.manage-mode .tabs button {
+  color: #475569;
+}
+.app.manage-mode .tabs button.active {
+  background: #ccfbf1;
+  color: #0f766e;
+}
+.app.manage-mode .more-menu {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+.app.manage-mode .more-menu button {
+  color: #334155;
+}
+.app.manage-mode .more-menu button.active {
+  color: #0f766e;
+  background: #ccfbf1;
+}
+.app.manage-mode .logout {
+  background: #fff;
+  color: #334155;
+}
+
+/* 三栏：v03 P2 为 44% / 32% / 24%（商品区 / 购物车 / 结算区） */
+.cols {
+  display: grid;
+  grid-template-columns: minmax(0, 44fr) minmax(240px, 32fr) minmax(200px, 24fr);
+  gap: 14px;
+  padding: 14px;
+  /* 状态条 44 + 快捷键条 38 已由父级 flex 扣掉，这里只要撑满剩余高度 */
+  flex: 1;
+  min-height: 0;
+}
+
+/* v03 P2：应收下方的「优惠 · 件数」副行 */
+.pay-note {
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* v03 P2：收款方式 2×2，按钮 52px */
+.pay-methods-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.pay-methods-grid button {
+  height: 52px;
+  border: 1px solid var(--line);
+  background: #1e293b;
+  color: #cbd5e1;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.pay-methods-grid button:hover:not(:disabled) {
+  border-color: var(--brand);
+  color: #5eead4;
+}
+
+.pay-methods-grid button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* v03 P2：内容区底部独立快捷键条 38px */
+.hotkeys-bar {
+  flex: none;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  background: #0b1220;
+  border-top: 1px solid #1e293b;
+  font-size: 12.5px;
+  color: #64748b;
+  overflow: hidden;
+}
+
+.hotkeys-bar b {
+  color: #cbd5e1;
+  font-weight: 600;
+  margin-right: 3px;
+}
+
+.hotkeys-bar .hk-note {
+  margin-left: 10px;
+  color: #475569;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-head h2 {
+  font-size: 14px;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* 商品区 */
+.search {
+  flex: 1;
+}
+
+.cats {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+}
+
+.cat {
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* v03 P2 分类选中：青绿实底 + 白字（不是浅青底浅青字） */
+.cat.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #ffffff;
+}
+
+.grid {
+  display: grid;
+  /* v03 P2：商品网格固定 4 列 */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px;
+  overflow-y: auto;
+}
+
+.card {
+  text-align: left;
+  padding: 10px;
+  min-height: 96px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card .name {
+  font-weight: 600;
+}
+
+.card .price {
+  color: var(--money);
+  font-variant-numeric: tabular-nums;
+}
+
+.card .hot {
+  font-size: 11px;
+  color: var(--brand);
+  border: 1px solid var(--brand);
+  border-radius: 4px;
+  padding: 0 4px;
+  width: fit-content;
+}
+
+/* 购物车 */
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 14px;
+}
+
+.cart-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  padding: 9px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.cart-row .sub {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.qty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qty button {
+  min-width: 26px;
+  width: auto;
+  height: 26px;
+  padding: 0 5px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--muted);
+  padding: 16px;
+  text-align: center;
+}
+
+.empty-icon {
+  opacity: 0.55;
+}
+
+.empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.empty-sub {
+  font-size: 12px;
+}
+
+/* 结算栏 */
+.checkout {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.total-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.total {
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--money);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.pay {
+  /* v03 .btn-money：56px 高、20px/800 深字、全宽琥珀结算 */
+  background: var(--money);
+  border-color: var(--money);
+  color: #1a1206;
+  font-weight: 800;
+  font-size: 20px;
+  height: 56px;
+  border-radius: var(--radius);
+  width: 100%;
+}
+
+/* 结算按钮内的快捷键提示：橙黄底上必须用深色，默认 .kbd 的浅灰字/深边框在
+   Amber 底上对比不足（Bug：Enter 看不清） */
+.pay .kbd {
+  border-color: rgba(26, 18, 6, 0.4);
+  color: #1a1206;
+  background: rgba(26, 18, 6, 0.08);
+}
+
+.pay:hover:not(:disabled) {
+  background: #d97706;
+}
+
+/* 空车时结算禁用：主按钮降为灰底，避免无意义的高亮主操作（UI 优化 P1） */
+.pay:disabled {
+  background: var(--panel-2);
+  border-color: var(--line);
+  color: var(--muted);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.pay:disabled .kbd {
+  border-color: var(--line);
+  color: var(--muted);
+  background: transparent;
+}
+
+.actions {
+  display: grid;
+  gap: 8px;
+}
+
+/* 右栏按钮层级：会员/挂单为次级操作（描边），清空为弱化文字链接（UI 优化 P2） */
+.actions button {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-weight: 500;
+  height: 44px;
+}
+.actions button:hover:not(:disabled) {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+.actions button:last-child {
+  color: var(--muted);
+  border-style: dashed;
+}
+.actions button:last-child:hover:not(:disabled) {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* 弹窗 */
+.mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.72);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 20;
+}
+
+.modal {
+  width: min(520px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* v03 P3 结算弹窗：560px 宽、26/28/22 内距 */
+.pay-modal {
+  width: min(560px, 100%);
+  padding: 26px 28px 22px;
+}
+
+/* v03 P3：金额上方一行 13px 浅灰「应收金额」 */
+.pay-label {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.pay-modal .pay-amount {
+  margin: 4px 0 2px;
+}
+
+.modal h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.pay-amount {
+  text-align: center;
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--money);
+  font-variant-numeric: tabular-nums;
+}
+
+.quicks {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.quicks button {
+  padding: 12px 0;
+}
+
+/* v03 P3：找零是弹窗里第二重要的数字，34px/800 绿色，不做成灰底行 */
+.change {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.change span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.change b {
+  color: #4ade80;
+  font-size: 34px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* v03 P3：取消 48px 描边、确认 48px 琥珀且更宽（flex 1.6），收款动作是唯一主按钮 */
+.modal-actions button {
+  height: 48px;
+  padding: 0 20px;
+}
+
+.modal-actions .primary {
+  flex: 1.6;
+  background: var(--money);
+  border-color: var(--money);
+  color: #111a2e;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #04211f;
+  font-weight: 700;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  background: #0b1424;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 20px;
+  z-index: 30;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.toast.bad {
+  border-color: var(--danger);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.kbd {
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* 顶部页签已由 nav64 + ☰ 菜单取代，DOM 保留作导航源（脚本与快捷键仍按这套口径） */
+.tabs {
+  display: none;
+}
+
+.tabs button {
+  border: 0;
+  background: transparent;
+  padding: 5px 14px;
+  border-radius: 6px;
+  color: var(--muted);
+}
+
+.tabs button.active {
+  background: var(--brand-soft);
+  color: #ccfbf1;
+}
+
+/* v03 P2：顶栏右端「☰ 菜单」青绿实底 32px，替代旧页签导航 */
+.more-nav {
+  position: relative;
+}
+.more-nav summary,
+.more-nav .more-btn {
+  list-style: none;
+  cursor: pointer;
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 6px;
+  background: #0d9488;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  user-select: none;
+}
+.more-nav summary::-webkit-details-marker {
+  display: none;
+}
+.more-nav.menu-open .more-btn,
+.more-nav .more-btn:hover {
+  background: #0f766e;
+}
+
+/* 管理抽屉（v03 menu-drawer 360px）：白底浮层，列出全部可见视图 */
+.more-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 360px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 80px);
+  overflow: auto;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 60;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+}
+.more-menu h4 {
+  margin: 4px 8px 6px;
+  font-size: 12.5px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+.more-menu button {
+  text-align: left;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  color: #334155;
+  font-size: 14px;
+}
+.more-menu button:hover {
+  background: #f8fafc;
+}
+.more-menu button.active {
+  color: #0f766e;
+  background: #ccfbf1;
+  font-weight: 700;
+}
+.more-menu .drawer-foot {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e2e8f0;
+}
+.more-menu .drawer-foot button {
+  color: #dc2626;
+}
+
+/* 订单页（管理页浅色，ADR-UI） */
+.orders {
+  margin: 14px;
+  background: transparent;
+  color: var(--text);
+  border-radius: 10px;
+  padding: 16px 18px;
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+.orders-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.orders-head h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.orders-head .grow {
+  flex: 1;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+}
+
+.filters button {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  /* v03 P4：筛选胶囊 38px 高、13.5px、padding 0 16px */
+  height: 38px;
+  padding: 0 16px;
+  font-size: 13.5px;
+  border-radius: 999px;
+}
+
+.filters button.active {
+  background: #0d9488;
+  border-color: #0d9488;
+  color: #fff;
+}
+
+.orders-head > button {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.orders-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+/* v03 .btn-line：浅色管理页顶部工具栏按钮 40px / #CBD5E1 描边 / 13.5px / #334155
+   只命中 .orders-head 的直接子按钮，避免影响状态筛选胶囊与表格内小按钮 */
+.page.light .orders-head > button {
+  height: 40px;
+  padding: 0 16px;
+  border-color: #cbd5e1;
+  color: #334155;
+  font-size: 13.5px;
+}
+
+/* v03 .btn-primary：青绿实底 + 白字 */
+.page.light .orders-head > button.primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* v03 表单控件基线：浅色页 select / 输入框统一 38px 高、13.5px，避免设置页掉到 31px */
+.page.light select,
+.page.light input:not([type='checkbox']):not([type='radio']) {
+  height: 38px;
+  font-size: 13.5px;
+  border-radius: 8px;
+}
+
+/* v03 .btn-primary：44px 高（.es-btn 有自己的一套尺寸，别被这里波及） */
+.page.light button.primary:not(.es-btn) {
+  height: 44px;
+}
+
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+/* v03 P4：筛选行右端的「共 N 笔 · 合计 ¥X」 */
+.filters-meta {
+  margin-left: auto;
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.filters-row .f-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.filters-row select,
+.filters-row input[type="date"] {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 0 12px;
+  font-size: 13.5px;
+  height: 38px;
+  min-height: 38px;
+}
+.orders-warn {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--money);
+  border-radius: 8px;
+  color: var(--money);
+  background: var(--money-soft);
+  font-size: 13px;
+}
+.orders-table tbody tr.held-over td {
+  border-left: 3px solid var(--money);
+  border-bottom-color: var(--money);
+}
+.held-duration {
+  font-size: 12px;
+  color: var(--money);
+  margin-top: 2px;
+}
+
+.printer-hint {
+  color: #dc2626;
+  font-size: 12px;
+  margin: 4px 0 0;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 11px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+/* v03 table.tbl：表头不要整块底色，只用 12.5px 浅灰字 + 一条细下边框 */
+.orders-table th {
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--line);
+}
+
+.orders-table tbody tr:hover {
+  background: var(--panel-2);
+}
+
+.orders-table tbody tr.selected {
+  background: #ecfdf5;
+}
+
+.orders-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.orders-table .mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.orders-table .ops {
+  display: flex;
+  gap: 6px;
+  /* v03 设计稿：各表「操作」列表头与内容同侧左对齐，不右顶格 */
+  justify-content: flex-start;
+  /* 按钮文案不许竖排：列窄时让表格自己分配宽度，而不是把「删除」拆成两行；
+     列宽不足时按钮也不压缩，否则「明细/重打」会被挤成一字一行 */
+  white-space: nowrap;
+  flex-wrap: nowrap;
+}
+
+.orders-table .ops button {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.orders-table .ops button:disabled {
+  opacity: 0.4;
+}
+
+.chip {
+  display: inline-block;
+  padding: 1px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.chip-ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.chip-busy {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.chip-bad {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.chip-idle {
+  background: var(--line);
+  color: var(--muted);
+}
+
+.detail-row td {
+  background: var(--panel-2);
+}
+
+.detail {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.detail-items {
+  min-width: 280px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 3px 0;
+}
+
+.detail-sum {
+  display: flex;
+  gap: 18px;
+  color: var(--text);
+  align-self: flex-end;
+}
+
+.empty-row {
+  text-align: center;
+  color: var(--muted);
+  padding: 24px 0;
+}
+
+.empty-cell {
+  padding: 0;
+  text-align: center;
+}
+
+.orders-toast {
+  position: sticky;
+  bottom: 0;
+  margin: 12px auto 0;
+  width: fit-content;
+  background: #0f172a;
+  color: #f8fafc;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 13px;
+}
+
+.orders-toast.bad {
+  background: #991b1b;
+}
+
+/* 交接班 */
+/* v03 P6 交接班：左卡 1.1（2×2 汇总 + 合计 28px + 差异条）+ 右列 .9（信息卡 / 结班动作） */
+.shift-layout {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.shift-main {
+  flex: 1.1;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.shift-side {
+  flex: 0.9;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.shift-side .shift-card {
+  margin-bottom: 0;
+}
+
+.shift-sum {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+
+.shift-sum .sum-cell span {
+  display: block;
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.shift-sum .sum-cell b {
+  display: block;
+  margin-top: 4px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+
+.shift-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 16px 0;
+}
+
+.shift-totals {
+  display: flex;
+  gap: 44px;
+  justify-content: space-between;
+}
+.shift-totals > div:last-child {
+  text-align: right;
+}
+
+.shift-totals span {
+  display: block;
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.shift-totals .big {
+  display: block;
+  margin-top: 2px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+
+.shift-diff {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.shift-diff.ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.shift-diff.bad {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.shift-info div {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 0;
+  font-size: 13px;
+  border-bottom: 1px dashed #f1f5f9;
+}
+
+.shift-info b {
+  text-align: left;
+}
+
+.shift-info span {
+  color: #64748b;
+}
+
+.shift-info b {
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+
+.shift-close {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.shift-close label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.shift-close label b {
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.shift-close label b.bad {
+  color: #b91c1c;
+}
+
+.shift-close input {
+  height: 40px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 14px;
+  background: #fff;
+  color: #0f172a;
+}
+
+.shift-close button.primary {
+  height: 46px;
+  border: 0;
+  border-radius: 9px;
+  background: #0d9488;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.shift-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.shift-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.shift-cards .shift-card {
+  margin-bottom: 0;
+}
+
+.shift-card h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.print-section-title {
+  margin: 26px 0 12px;
+  font-size: 16px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.shift-card .label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.shift-card .value {
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.shift-card .value.money {
+  color: #b45309;
+}
+
+.shift-card .value.mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 18px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 4px 0 0;
+}
+
+.shift-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.shift-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.shift-form label b {
+  font-size: 15px;
+  color: var(--text);
+}
+
+.shift-form label b.bad {
+  color: #b91c1c;
+}
+
+.shift-form input {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 7px 10px;
+  border-radius: 6px;
+  width: 180px;
+}
+
+.shift-form button.primary {
+  background: #0d9488;
+  border: 1px solid #0d9488;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 8px;
+}
+
+/* 商品管理 */
+.products-search {
+  width: 280px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* v03 P5 商品页工具栏：280px 搜索 + 类目/模板，与标题行分开 */
+.products-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+  flex-wrap: wrap;
+}
+
+.products-bar button {
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.products-bar button:hover {
+  border-color: #0d9488;
+  color: #0f766e;
+}
+
+.products-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.orders-head button.primary {
+  background: #0d9488;
+  border: 1px solid #0d9488;
+  color: #fff;
+  padding: 7px 16px;
+  border-radius: 8px;
+}
+
+.orders-table tr.dim td {
+  color: var(--muted);
+}
+
+/* v03 P5：编辑弹窗 640px 白卡（与深色收银台弹窗区分） */
+.product-modal {
+  width: min(640px, 100%);
+  background: #ffffff;
+  color: #1f2937;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 22px 26px;
+}
+
+.product-modal h3 {
+  color: #0f172a;
+}
+
+.product-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.product-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.product-form label.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+/* v03 P5 商品图上传位（当前版本不存图，占位不装可点） */
+.product-form .pf-thumb {
+  width: 64px;
+  height: 64px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.product-form .pf-thumb span {
+  font-size: 10px;
+  color: #cbd5e1;
+}
+
+.product-form input {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.product-modal .modal-actions button {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.product-modal .modal-actions button {
+  flex: none;
+  min-width: 96px;
+  height: 40px;
+  font-size: 13.5px;
+}
+
+.product-modal .modal-actions .primary {
+  flex: none;
+  background: #0d9488;
+  border-color: #0d9488;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 登录页 */
+.login-wrap {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(1200px 600px at 80% -10%, #123b3a 0%, #0f172a 60%);
+}
+
+.login-card {
+  /* v03：登录卡片 420px 品牌态；窄屏按视口收窄，避免手机端横向滚动 */
+  width: min(420px, calc(100vw - 32px));
+  max-width: 100%;
+  box-sizing: border-box;
+  background: #0f172a;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 30px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.login-logo {
+  width: 48px;
+  height: 48px;
+}
+
+.login-brand {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.login-sub {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: -8px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.login-field input {
+  background: #16233a;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 15px;
+}
+
+/* v03 P1 登录按钮用 .btn-money（琥珀底 + 深字），与收银台结算同一视觉语言 */
+.login-btn {
+  background: var(--money);
+  border-color: var(--money);
+  color: #111a2e;
+  font-weight: 800;
+  font-size: 16px;
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+.login-error {
+  color: #f87171;
+  font-size: 13px;
+  margin: 0;
+}
+
+.login-hint {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+  text-align: center;
+}
+
+/* v03 P1：记住密码（青色 accent）与底部版本文案 */
+.login-remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.login-remember input[type='checkbox'] {
+  width: 15px;
+  height: 15px;
+  accent-color: #0d9488;
+  cursor: pointer;
+}
+
+.login-version {
+  margin: 2px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: #475569;
+}
+
+.statusbar .logout {
+  padding: 4px 12px;
+  font-size: 12px;
+}
+
+/* 设置页（v03 P7：字段两列网格、卡片铺满内容区） */
+/* v03 P7 设置页：左 200px 导航卡 + 右内容卡 */
+.settings-shell {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.settings-nav {
+  width: 200px;
+  flex: none;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* v03 规则三：分组卡随页面滚动常驻，滚到后厨打印/打印队列时仍能看到自己在哪一组 */
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+.settings-nav button {
+  text-align: left;
+  height: 42px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #475569;
+  font-size: 13.5px;
+}
+
+.settings-nav button:hover {
+  background: #f8fafc;
+}
+
+.settings-nav button.active {
+  background: #ccfbf1;
+  color: #0f766e;
+  font-weight: 700;
+}
+
+.settings-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-body .shift-card {
+  margin-bottom: 14px;
+}
+
+/* 打印模式三选项网格：选中项青绿描边 + 实心圆点 */
+.print-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.print-mode-opt {
+  position: relative;
+  text-align: left;
+  padding: 14px 14px 14px 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.print-mode-opt .pm-radio {
+  position: absolute;
+  left: 14px;
+  top: 16px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+}
+
+.print-mode-opt b {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.print-mode-opt .pm-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.print-mode-opt.on {
+  border: 2px solid #0d9488;
+  padding: 13px 13px 13px 37px;
+}
+
+.print-mode-opt.on .pm-radio {
+  border-color: #0d9488;
+  background: #0d9488;
+  box-shadow: inset 0 0 0 3px #fff;
+}
+
+.print-mode-opt.on b {
+  color: #0f766e;
+}
+
+.print-mode-opt.parked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* 打印机行：输入 + 状态胶囊 + 测试 + 模板标签 */
+.printer-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.printer-row .printer-target {
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.printer-row .printer-target input {
+  height: 40px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 14px;
+  background: #fff;
+  color: #0f172a;
+}
+
+.printer-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  background: #fef3c7;
+  color: #92400e;
+  white-space: nowrap;
+}
+
+.printer-state i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.printer-state.ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.printer-row button.primary {
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #0d9488;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.tag-soft {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+}
+
+.settings-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 18px;
+  margin: 14px 0;
+  max-width: none;
+}
+
+@media (max-width: 900px) {
+  .settings-form {
+    grid-template-columns: 1fr;
+  }
+  /* 窄屏收起左侧图标栏，导航统一走顶栏 ☰ 菜单，避免 64px 挤掉商品区 */
+  .nav64 {
+    display: none;
+  }
+  /* 交接班两列在窄屏堆成单列 */
+  .shift-layout {
+    flex-direction: column;
+  }
+  .shift-main,
+  .shift-side {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+  /* 设置页窄屏：导航卡变横向标签条，打印模式三选项堆叠 */
+  .settings-shell {
+    flex-direction: column;
+  }
+  .settings-nav {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .settings-nav button {
+    flex: none;
+    white-space: nowrap;
+  }
+  .print-mode-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.settings-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.settings-form input {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 9px 12px;
+  border-radius: 7px;
+  font-size: 14px;
+}
+
+.settings-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-actions button.primary {
+  background: #0d9488;
+  border: 1px solid #0d9488;
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 8px;
+}
+
+.settings-actions button:disabled {
+  opacity: 0.5;
+}
+
+.settings-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+.perm-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text);
+  margin: 6px 0;
+}
+.refund-lines {
+  display: grid;
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.refund-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.refund-line input {
+  width: 70px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: var(--text);
+}
+.reprice-tag {
+  color: #b45309;
+  margin-left: 6px;
+}
+
+.qty button.reprice-on {
+  border-color: #f59e0b;
+  color: #b45309;
+}
+.orders-table button.danger,
+.modal button.danger {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.modal button.danger {
+  background: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
+}
+
+/* 报表 */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label { font-size: 12px; color: var(--muted); }
+.stat-value { font-size: 24px; font-weight: 700; color: var(--text); }
+.stat-sub { font-size: 11px; color: var(--muted); }
+
+.date-input {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 10px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+/* ===== WP-B · 报表页头部窄屏换行（≤640px）=====
+   桌面维持一行（.grow 把导出按钮推到右侧）。窄屏按 order 重排成：
+   报表 | 日结 月结 | 刷新
+   日期 | 今天 昨天 近 7 天
+   导出 CSV | 导出本月 */
+@media (max-width: 640px) {
+  .reports-head {
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .reports-head h2 {
+    order: 1;
+    flex: 0 0 auto;
+  }
+  .reports-head .quick-mode {
+    order: 2;
+    display: flex;
+    gap: 6px;
+  }
+  /* 刷新：固定在首行右端 */
+  .reports-head > button:last-child {
+    order: 3;
+    margin-left: auto;
+  }
+  .reports-head .date-input {
+    order: 4;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 46vw;
+    height: 40px;
+    font-size: 14px;
+  }
+  .reports-head .quick-range {
+    order: 5;
+    display: flex;
+    gap: 6px;
+    flex: 0 0 auto;
+  }
+  /* 导出按钮：靠 45% 的 flex-basis 保证两个一起换到下一行，各占半行 */
+  .reports-head > button:not(:last-child) {
+    order: 6;
+    flex: 1 0 45%;
+    min-width: 96px;
+  }
+  .reports-head .quick button,
+  .reports-head > button {
+    min-height: 40px;
+    padding: 0 12px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .reports-head .quick button {
+    flex: 1 1 auto;
+    min-width: 44px;
+  }
+  /* 桌面用来撑开的那根占位条，窄屏换成 order 布局后不再需要 */
+  .reports-head .grow {
+    display: none;
+  }
+}
+
+.pay-methods {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.pay-methods button {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 999px; /* v03：支付方式胶囊 */
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+}
+
+.pay-methods button.active {
+  border-color: var(--brand);
+  background: var(--brand);
+  /* v03：青绿实底上必须是白字，深色字在实底上对比不足 */
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* 挂单条 */
+.held-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+}
+
+.held-title {
+  color: var(--money);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.held-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  color: var(--text);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.held-go {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+/* 表单控件跟随主题（原生 select/checkbox 默认是白底） */
+select {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+input[type='checkbox'] {
+  accent-color: var(--brand);
+}
+
+/* 会员积分到期提醒 */
+.member-expiring {
+  margin: 0 14px 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--money);
+  border-radius: 8px;
+  color: var(--money);
+  font-size: 13px;
+  background: var(--panel-2);
+}
+
+.exp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.exp-toggle {
+  border: 1px solid var(--money);
+  color: var(--money);
+  background: transparent;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.exp-close {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.exp-list {
+  margin-top: 8px;
+  display: grid;
+  gap: 4px;
+}
+
+.exp-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 0.6fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text);
+  padding: 6px 8px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.exp-name {
+  font-weight: 600;
+}
+
+.exp-date {
+  color: var(--muted);
+}
+
+.exp-print {
+  border: 1px solid var(--line);
+  color: var(--muted);
+  background: transparent;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: not-allowed;
+}
+
+.audit-pager {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+/* 桌面端隐藏购物车按钮（仅移动端结算条需要）。
+   注意必须写在媒体查询之前：同优先级下后定义的规则会覆盖前者，
+   若放在 @media 之后会把移动端 display:inline-flex 也压掉。 */
+.cart-toggle {
+  display: none;
+}
+
+@media (max-width: 430px) {
+  /* 顶栏：导航收进「更多」 */
+  .statusbar {
+    gap: 8px;
+    padding: 0 10px;
+  }
+  .statusbar .tabs {
+    display: none;
+  }
+  .statusbar .sb-user,
+  .statusbar .sb-shift,
+  .statusbar .sb-health,
+  .statusbar .sb-printer {
+    display: none;
+  }
+  .statusbar .shop {
+    max-width: 88px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .statusbar .logout {
+    padding: 5px 10px;
+  }
+  /* 移动端更多菜单：全局样式已定义，这里仅补左间距 */
+
+  /* 收银台：商品区单列，结算条固定底部，购物车变底部抽屉 */
+  .cols {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+    gap: 0;
+    padding: 10px 10px 74px;
+    height: calc(100% - 44px);
+    overflow-y: auto;
+  }
+  .cols > .panel:first-child {
+    flex: 1 1 auto;
+    min-height: 240px;
+  }
+  /* 购物车抽屉（隐藏态滑出屏幕，.open 上滑） */
+  .cols > .panel:nth-child(2) {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: 60px;
+    max-height: 62%;
+    z-index: 12;
+    transform: translateY(calc(100% + 90px));
+    transition: transform 0.24s ease;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45);
+  }
+  .cols > .panel:nth-child(2).open {
+    transform: translateY(0);
+  }
+  /* 结算条固定底部 */
+  .cols > .panel:nth-child(3) {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    z-index: 10;
+  }
+  .cols > .panel:nth-child(3) .checkout {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+  .cols > .panel:nth-child(3) .total-label {
+    display: none;
+  }
+  .cols > .panel:nth-child(3) .total {
+    font-size: 26px;
+  }
+  .cols > .panel:nth-child(3) .pay {
+    height: auto;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .cols > .panel:nth-child(3) .actions,
+  .cols > .panel:nth-child(3) .hint {
+    display: none;
+  }
+  /* 购物车按钮（仅移动端显示） */
+  .cart-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--muted);
+  }
+  .cart-toggle .cart-count {
+    background: var(--money);
+    color: #1a1206;
+    border-radius: 999px;
+    min-width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0 4px;
+  }
+
+  /* 商品 2 列 */
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 10px;
+  }
+  .card {
+    min-height: 72px;
+    padding: 10px;
+  }
+
+  /* 支付弹窗：底部弹出、按钮全宽、金额放大 */
+  .mask {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal {
+    width: 100%;
+    border-radius: 14px 14px 0 0;
+    padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+    max-height: 88%;
+    overflow-y: auto;
+  }
+  .pay-amount {
+    font-size: 52px;
+  }
+  .modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .modal-actions button {
+    padding: 14px 0;
+  }
+  .quicks {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .modal input[type="number"] {
+    font-size: 26px;
+  }
+}
+
+/* ===== 矮视口适配（UI 优化 P0：窗口高度被压缩时布局不重叠、不挤压） ===== */
+@media (max-height: 700px) {
+  .statusbar {
+    height: 44px;
+    padding: 0 12px;
+    gap: 12px;
+  }
+  .cols {
+    height: calc(100% - 44px);
+    padding: 10px;
+    gap: 10px;
+  }
+  .grid {
+    gap: 8px;
+    padding: 10px;
+  }
+  .card {
+    min-height: 68px;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .cart-row {
+    padding: 6px 0;
+  }
+  .checkout {
+    padding: 10px;
+    gap: 8px;
+  }
+  .total {
+    font-size: 30px;
+  }
+  .pay {
+    padding: 10px;
+    height: 48px;
+    font-size: 18px;
+  }
+  /* 矮屏隐藏快捷键说明，把空间还给操作区 */
+  .hint {
+    display: none;
+  }
+}
+
+/* 桌面窄屏（宽度 431–900px）：右上状态位让位给页签，避免顶栏拥挤 */
+@media (min-width: 431px) and (max-width: 900px) {
+  .statusbar .sb-shift,
+  .statusbar .sb-health {
+    display: none;
+  }
+}
+
+.purchase-head {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.purchase-head label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.purchase-head input {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 9px 12px;
+  border-radius: 7px;
+  font-size: 14px;
+}
+
+.purchase-add {
+  margin-top: 8px;
+  padding: 7px 12px;
+}
+
+.purchase-del {
+  border: 0;
+  background: transparent;
+  color: #dc2626;
+  padding: 0 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.purchase-del:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.purchase-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.purchase-total {
+  font-size: 18px;
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .purchase-head {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stock-entry {
+  position: relative;
+}
+
+.stock-menu-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: transparent;
+}
+
+.stock-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 132px;
+  padding: 6px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.stock-menu button {
+  justify-content: flex-start;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 7px 10px;
+  border-radius: 6px;
+  text-align: left;
+}
+
+.stock-menu button:hover {
+  background: var(--panel-2);
+}
+
+.history-row {
+  cursor: pointer;
+}
+
+/* ===== WP-A · 商品页 375 卡片化（≤640px）=====
+   只作用于商品页主表 .products-table。采购弹窗、盘点历史、盘点详情里的
+   .orders-table 不受影响，弹窗在窄屏仍按原表格布局显示。 */
+@media (max-width: 640px) {
+  .products {
+    margin: 10px;
+    padding: 12px 10px;
+  }
+  .products .orders-head {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  /* 桌面靠 .grow 把操作按钮推到右侧；窄屏改为自然换行，不再需要占位 */
+  .products .orders-head .grow {
+    display: none;
+  }
+  .products .products-search {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .products .orders-head button {
+    min-height: 40px;
+    padding: 0 14px;
+  }
+
+  /* 表头在窄屏不需要：列名由卡片内的分隔与前缀表达 */
+  .products-table thead {
+    display: none;
+  }
+  .products-table,
+  .products-table tbody {
+    display: block;
+    width: 100%;
+    background: transparent;
+  }
+  .products-table tbody tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 10px 12px 12px;
+    margin: 0 0 10px;
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  /* 空态整块交给 EmptyState，不套卡片壳 */
+  .products-table tbody tr.empty-row {
+    display: block;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+  }
+  .products-table td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+  /* 第 1 行：商品名 + 热销 chip 独占一行；状态 chip 钉在右上角 */
+  .products-table td:nth-child(1) {
+    order: 1;
+    flex: 1 1 100%;
+    min-width: 0;
+    padding-right: 64px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .products-table td:nth-child(6) {
+    order: 2;
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    flex: 0 0 auto;
+  }
+  /* 第 2 行：类目 · ¥售价 · 库存 N */
+  .products-table td:nth-child(3) {
+    order: 3;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 42vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .products-table td:nth-child(4) {
+    order: 4;
+    flex: 0 0 auto;
+    text-align: left;
+  }
+  .products-table td:nth-child(4)::before {
+    content: '· ';
+    color: var(--muted);
+  }
+  .products-table td:nth-child(5) {
+    order: 5;
+    flex: 0 0 auto;
+    text-align: left;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .products-table td:nth-child(5)::before {
+    content: '库存 ';
+  }
+  /* 第 3 行：条码，没有条码的商品整块不占位 */
+  .products-table td:nth-child(2) {
+    order: 6;
+    flex: 1 1 100%;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .products-table td.barcode-empty {
+    display: none;
+  }
+  /* 第 4 行：四个操作按钮，一行放不下就换行，全部留在视口内 */
+  .products-table td.ops {
+    order: 7;
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .products-table td.ops button {
+    flex: 1 1 auto;
+    min-width: 62px;
+    min-height: 40px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+  .products-table td.ops button:last-child {
+    color: #b91c1c;
+    border-color: #fecaca;
+  }
+  /* 已下架商品淡化整张卡片，而不是逐个 td 变灰 */
+  .products-table tbody tr.dim {
+    opacity: 0.72;
+  }
+  .products-table tbody tr.dim td {
+    color: inherit;
+  }
+}
+
+
+/* 商品缩略图 */
+.product-thumb {
+  width: 34px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.product-thumb-empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--panel-2);
+}
+
+/* ===== M8 · 移动端热区统一收口（≤640px）=====
+   所有可点元素最小 40×40，避免手指点不中。桌面保持原密度。 */
+@media (max-width: 640px) {
+  button,
+  .btn,
+  select,
+  input[type='date'],
+  input[type='number'] {
+    min-height: 40px;
+  }
+  button {
+    min-width: 40px;
+    padding: 0 12px;
+  }
+  /* 顶栏与图标按钮（更多/退出）单独放宽 */
+  .statusbar button,
+  .topbar button {
+    min-height: 40px;
+    min-width: 40px;
+  }
+}
+
+
+/* 商品页操作列：库存/编辑/下架/删除 四个按钮，列宽不够会把字挤成竖排 */
+.products-table td.ops {
+  min-width: 236px;
+}
+/* ============================================================
+   v03 P1–P8 严格对齐追加段（后置覆盖，逐条对应设计稿实测值）
+   ============================================================ */
+
+/* ---------- P8 状态条：离线态 ---------- */
+.statusbar.offline {
+  background: #0f172a;
+  box-shadow: inset 3px 0 0 #f59e0b;
+}
+.statusbar.offline .shop {
+  color: #f59e0b;
+}
+.sb-offline-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.statusbar .dot.off {
+  background: transparent;
+  border: 1.5px solid #f59e0b;
+  box-shadow: none;
+}
+.statusbar.offline .sb-service {
+  color: #fbbf24;
+}
+/* 待重打是红色数字徽标，前面不加点也不加粗文字 */
+.statusbar .sb-queue {
+  color: #e2e8f0;
+  font-size: 12.5px;
+}
+.app.manage-mode .statusbar .sb-queue {
+  color: #475569;
+}
+
+/* ---------- P2 商品区：搜索框（放大镜 + F1 关闭） ---------- */
+.panel-head {
+  padding: 16px;
+  border-bottom: 0;
+}
+.panel-head h2 {
+  display: none; /* 设计稿商品区无标题，搜索框独占一行 */
+}
+.search-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.search-ico {
+  position: absolute;
+  left: 13px;
+  width: 17px;
+  height: 17px;
+  color: #64748b;
+  pointer-events: none;
+}
+.search {
+  flex: 1;
+  width: 100%;
+  height: 44px;
+  padding: 0 92px 0 40px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+.search:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.22);
+  outline: none;
+}
+.search-kbd {
+  position: absolute;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  color: #94a3b8;
+  font-size: 12px;
+  background: #111a2e;
+  pointer-events: none;
+}
+
+/* ---------- P2 商品卡：40px 图标块 + 名称/价格两行 ---------- */
+.cats {
+  padding: 0 16px 12px;
+  border-bottom: 0;
+}
+.grid {
+  padding: 0 16px 16px;
+}
+.card {
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-height: 96px;
+  padding: 10px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.card.sel {
+  border-color: var(--brand);
+  background: #16233a;
+}
+.card.off {
+  border-style: dashed;
+  opacity: 0.4;
+}
+.card.off .name {
+  text-decoration: line-through;
+}
+.card .thumb {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+}
+.card .thumb svg {
+  width: 22px;
+  height: 22px;
+}
+.card .meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  text-align: left;
+}
+.card .name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card .price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fbbf24;
+}
+.card .off-tag {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* ---------- P2 购物车：每行一张卡 ---------- */
+.cart-items {
+  padding: 0;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.cart-row {
+  position: relative;
+  display: block;
+  padding: 12px 14px;
+  margin-bottom: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #273449;
+  border-radius: 0;
+}
+.cart-row:last-child {
+  border-bottom: 0;
+}
+.cart-row .row-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cart-row .row-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f1f5f9;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cart-row .row-amount {
+  margin-left: auto;
+  font-size: 15px;
+  font-weight: 600;
+  color: #f1f5f9;
+  font-variant-numeric: tabular-nums;
+}
+.cart-row .row-bottom {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+.cart-row .row-unit {
+  font-size: 12.5px;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+}
+.cart-row .repricing-ico {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  display: grid;
+  place-items: center;
+}
+.cart-row .repricing-ico svg {
+  width: 15px;
+  height: 15px;
+}
+.cart-row .repricing-ico:hover {
+  color: var(--brand);
+}
+.cart-row .row-del {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1;
+  opacity: 0;
+}
+.cart-row:hover .row-del {
+  opacity: 1;
+}
+.cart-row .qty {
+  margin-left: auto;
+  gap: 8px;
+}
+.qty button {
+  width: 26px;
+  min-width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 6px;
+  font-size: 15px;
+  line-height: 1;
+}
+.qty .plus {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #ffffff;
+}
+
+/* ---------- P2 购物车底部四键 ---------- */
+.cart-foot {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px 12px 0;
+}
+.cart-foot button {
+  height: 44px;
+  font-size: 13.5px;
+  background: transparent;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+}
+.cart-foot button .kbd {
+  margin-left: 4px;
+}
+
+/* ---------- P2 结算区 ---------- */
+.checkout {
+  padding: 16px;
+  gap: 0;
+}
+.total-label {
+  font-size: 13px;
+  color: #94a3b8;
+}
+.pay-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  font-size: 12.5px;
+  text-align: left;
+}
+.pay-note:hover {
+  color: var(--brand);
+}
+.pay-note .member-chip {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(13, 148, 136, 0.18);
+  color: #5eead4;
+  font-size: 11.5px;
+}
+.checkout .spacer {
+  flex: 1;
+  min-height: 12px;
+}
+.method-label {
+  font-size: 12.5px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+.pay-methods-grid {
+  margin-top: 0;
+  gap: 8px;
+}
+.pay-methods-grid button {
+  height: 52px;
+  font-size: 15px;
+  background: #1a2337;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+}
+.pay-methods-grid button:hover:not(:disabled) {
+  border-color: var(--brand);
+  color: #ffffff;
+}
+
+/* ---------- P3 支付弹窗 ---------- */
+.pay-modal {
+  gap: 0;
+}
+.pay-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.pay-sub {
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: #64748b;
+}
+.modal-x {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 20px;
+  line-height: 1;
+}
+.modal-x:hover {
+  color: #e2e8f0;
+}
+.pay-label {
+  margin-top: 14px;
+}
+.pay-methods {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.pay-methods button {
+  height: 32px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid #334155;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 13.5px;
+}
+.pay-methods button.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #ffffff;
+  font-weight: 600;
+}
+.pay-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+.pay-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pay-field-label {
+  font-size: 13px;
+  color: #94a3b8;
+}
+.pay-cols .cash-input {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #f1f5f9;
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.pay-cols .cash-input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.22);
+  outline: none;
+}
+.quicks {
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 0;
+}
+.quicks button {
+  height: 40px;
+  padding: 0;
+  font-size: 13.5px;
+}
+.change-col {
+  justify-content: flex-start;
+}
+.change {
+  display: block;
+  font-size: 34px;
+  font-weight: 800;
+  color: #4ade80;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+.change.bad {
+  color: #f87171;
+}
+.change-hint {
+  font-size: 12px;
+  color: #64748b;
+}
+.split-box {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.split-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 8px;
+}
+.split-row select,
+.split-row .split-amount {
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 14px;
+  padding: 0 10px;
+}
+.split-row .split-amount {
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.split-sum {
+  font-size: 12.5px;
+  color: #94a3b8;
+}
+.split-sum.ok {
+  color: #4ade80;
+}
+.split-sum .split-warn {
+  color: #f87171;
+  margin-left: 8px;
+}
+.pay-note-box {
+  margin-top: 14px;
+}
+.modal-actions {
+  margin-top: 18px;
+}
+.modal-actions .cancel {
+  flex: 1;
+  background: transparent;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+}
+.modal-actions .primary {
+  flex: 1.6;
+}
+.pay-foot-hint {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+/* 弹窗统一收尾：取消内不再挂 kbd */
+.modal-actions button .kbd {
+  display: none;
+}
+
+/* ---------- P4 订单查询 ---------- */
+.orders {
+  padding: 20px 24px;
+}
+.orders-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.orders-head h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+.btn-line {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13.5px;
+}
+.btn-line.sm {
+  height: 34px;
+  font-size: 12.5px;
+}
+.filters-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.f-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 4px 0 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+.f-pill select,
+.f-pill input {
+  height: 34px;
+  border: 0;
+  background: transparent;
+  color: #334155;
+  font-size: 13.5px;
+  padding: 0 8px 0 0;
+  outline: none;
+}
+.f-pill.f-date input {
+  width: 138px;
+  padding: 0;
+}
+.f-search {
+  width: 260px;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13.5px;
+}
+.f-search:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.14);
+  outline: none;
+}
+.filters-meta {
+  font-size: 12.5px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+/* 表格白卡 + v03 th/td 口径 */
+.orders-table,
+.tbl {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.orders-table thead th,
+.tbl thead th {
+  background: transparent;
+  color: #94a3b8;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-transform: none;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+.orders-table tbody td,
+.tbl tbody td {
+  padding: 9px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1f2937;
+  font-size: 13.5px;
+  line-height: 20px;
+}
+.orders-table tbody tr:hover td {
+  background: #f8fafc;
+}
+.time-cell {
+  color: #475569;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tag-paid {
+  background: #dcfce7;
+  color: #166534;
+}
+.tag-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+.tag-stop {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+.tag-bad {
+  background: #fee2e2;
+  color: #dc2626;
+}
+.ops-links {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 0 !important;
+}
+.ops-links button {
+  padding: 0;
+  height: auto;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 400;
+}
+.link-brand {
+  color: #0d9488;
+}
+.link-danger {
+  color: #dc2626;
+}
+.link-muted {
+  color: #64748b;
+}
+.orders-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  color: #94a3b8;
+  font-size: 12.5px;
+}
+.pager {
+  display: flex;
+  gap: 6px;
+}
+.pager button {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  font-size: 12.5px;
+}
+.pager button.on {
+  border-color: var(--brand);
+  color: var(--brand);
+  font-weight: 600;
+}
+.detail-head {
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* ---------- P1 登录 ---------- */
+.login-wrap {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(680px 420px at 18% 96%, rgba(13, 148, 136, 0.16), transparent 70%),
+    radial-gradient(520px 360px at 82% 8%, rgba(59, 130, 246, 0.10), transparent 72%),
+    #0b1220;
+  padding: 24px;
+}
+.login-topbrand {
+  position: absolute;
+  left: 26px;
+  top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.login-topbrand .lt-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+}
+.login-topbrand .lt-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1.2;
+}
+.login-topbrand .lt-sub {
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: #64748b;
+}
+.login-card {
+  /* 关键：不能写死 420 —— 手机 375 视口会横向溢出（grid 列按内容撑开到 488） */
+  width: min(420px, calc(100vw - 48px));
+  max-width: 100%;
+  box-sizing: border-box;
+  background: #111a2e;
+  border: 1px solid #22304a;
+  border-radius: 14px;
+  padding: 34px 34px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.login-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.login-card-head .login-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  flex: none;
+}
+.login-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: #f1f5f9;
+  line-height: 1.2;
+}
+.login-sub {
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: #64748b;
+}
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.login-field span {
+  font-size: 13px;
+  color: #94a3b8;
+}
+.login-field input {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #f1f5f9;
+  font-size: 14px;
+}
+.login-field input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.22);
+  outline: none;
+}
+.login-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.login-remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+.login-remember input {
+  accent-color: #0d9488;
+  width: 14px;
+  height: 14px;
+}
+.login-lock-hint {
+  font-size: 12.5px;
+  color: #64748b;
+}
+.login-btn {
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid #f59e0b;
+  background: #f59e0b;
+  color: #111a2e;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
+.login-hint {
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+}
+.login-version {
+  margin: 2px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: #475569;
+}
+
+/* ---------- P5 商品 ---------- */
+.f-search.wide {
+  width: 280px;
+}
+.bar-hint {
+  font-size: 12.5px;
+  color: #94a3b8;
+}
+.p-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 0;
+  background: transparent;
+}
+.p-status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.p-status.on {
+  background: #dcfce7;
+  color: #166534;
+}
+.p-status.on i {
+  background: #22c55e;
+}
+.p-status.off {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+.p-status.off i {
+  background: #94a3b8;
+}
+.p-status:disabled {
+  cursor: default;
+}
+.edit-modal {
+  width: min(640px, 100%);
+  padding: 22px 26px;
+  gap: 0;
+}
+.product-form.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 18px;
+  margin-top: 16px;
+}
+.pf-label {
+  font-size: 13px;
+  color: #94a3b8;
+}
+.pf-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+}
+.pf-status .p-status {
+  cursor: pointer;
+}
+.pf-note {
+  font-size: 12px;
+  color: #94a3b8;
+}
+.pf-image {
+  grid-column: 1 / -1;
+}
+.pf-drop {
+  height: 92px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #94a3b8;
+  font-size: 12.5px;
+  background: #f8fafc;
+}
+.pf-drop svg {
+  width: 22px;
+  height: 22px;
+}
+.modal-actions .save {
+  min-width: 96px;
+}
+.modal-actions .del {
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #dc2626;
+  font-size: 13px;
+}
+
+/* ---------- P6 交接班 ---------- */
+.shift-open-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #0f172a;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.shift-main-title {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+.shift-sum {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 24px;
+}
+.sum-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sum-cell span {
+  font-size: 12.5px;
+  color: #94a3b8;
+}
+.sum-cell .money {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+.sum-cell .sum-input {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.shift-totals .big {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.shift-totals .big.brand {
+  color: #0d9488;
+}
+.shift-diff {
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.shift-diff.ok {
+  background: #dcfce7;
+  color: #166534;
+}
+.shift-note-field {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.shift-note-field input {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 13.5px;
+}
+.shift-card-sub {
+  margin: 0 0 10px;
+  font-size: 12.5px;
+  color: #64748b;
+}
+.shift-close button {
+  height: 46px;
+}
+
+/* ---------- P7 设置 ---------- */
+.settings-sub {
+  margin: -4px 0 14px;
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.6;
+}
+.set-label {
+  margin: 18px 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+.print-mode-opt {
+  position: relative;
+  align-items: flex-start;
+  text-align: left;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  gap: 4px;
+}
+.print-mode-opt.on {
+  border: 2px solid #0d9488;
+  background: #f0fdfa;
+  padding: 13px;
+}
+.print-mode-opt .pm-check {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #0d9488;
+  color: #ffffff;
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+}
+.print-mode-opt .pm-radio {
+  display: none;
+}
+.print-mode-opt b {
+  font-size: 14px;
+  color: #0f172a;
+}
+.print-mode-opt .pm-desc {
+  display: block;
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+.printer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.printer-port {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #475569;
+}
+.printer-port select {
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13.5px;
+  padding: 0 8px;
+}
+.printer-input {
+  height: 38px;
+  min-width: 260px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 13.5px;
+}
+.printer-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.printer-state i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.printer-state.ok {
+  background: #dcfce7;
+  color: #166534;
+}
+.printer-state.off {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+.cloud-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 18px;
+}
+.cloud-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+.cloud-grid input {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #94a3b8;
+  font-size: 13.5px;
+  opacity: 0.55;
+}
+.muted.mini {
+  font-size: 12px;
+}
+
+/* ---------- P2 收银台：结算区贴底（设计稿把「收款方式」推到下半部） ---------- */
+.panel>.checkout {
+  flex: 1;
+  min-height: 0;
+}
+.checkout .spacer {
+  flex: 1 1 auto;
+  min-height: 16px;
+}
+.checkout .pay {
+  height: 56px;
+  font-size: 20px;
+  font-weight: 800;
+}
+.cart-items {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  align-content: start;
+}
+/* 商品区无标题，但购物车区设计稿有「购物车 + 件数」 */
+.cart-panel .panel-head h2 {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+.cart-panel .panel-head .hint {
+  font-size: 12.5px;
+  color: #94a3b8;
+}
+.hotkeys-bar .hk-note {
+  display: none;
+}
+/* 订单操作列必须是纯文字链（压掉表格里全局的按钮底） */
+.orders-table .ops-links button,
+.tbl .ops-links button {
+  height: auto;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.ops-links {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: nowrap;
+}
+/* 修复 ☰ 管理抽屉点不动：
+   ① 状态条原来的 overflow:hidden 会把 360px 抽屉整个裁掉（视觉上像点了没反应）；
+   ② 状态条原为 position:static，没建立层叠上下文，抽屉 z-index 无效，
+      点击会穿透到下方 .cols/.checkout 面板（实测 elementFromPoint 命中 DIV.checkout）。
+   左段自己裁，右段不收缩，防止长店名/班次号溢出。 */
+.statusbar {
+  position: relative;
+  z-index: 100;
+  overflow: visible;
+}
+.statusbar .sb-left {
+  min-width: 0;
+  overflow: hidden;
+}
+.statusbar .sb-right {
+  flex-shrink: 0;
+}
+
+/* v03 menu-drawer：全屏遮罩 rgba(2,6,23,.72) + 右侧 360px 全高深色面板
+   （标题「菜单」18px 800 + 关闭按钮 + 副行 + 卡片式入口 + 退出登录） */
+.menu-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(2, 6, 23, 0.72);
+}
+.md-panel {
+  width: 360px;
+  max-width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  background: #0f172a;
+  border-left: 1px solid #334155;
+  color: #f1f5f9;
+}
+.md-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.md-head h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+.md-close {
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 13px;
+  cursor: pointer;
+}
+.md-close:hover {
+  background: #1e293b;
+}
+.md-sub {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #94a3b8;
+}
+.md-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.mi {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  background: #1e293b;
+  text-align: left;
+  cursor: pointer;
+}
+.mi:hover {
+  background: #243147;
+}
+.mi-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+.mi-icon.teal {
+  background: rgba(13, 148, 136, 0.18);
+  color: #2dd4bf;
+}
+.mi-icon.amber {
+  background: rgba(251, 191, 36, 0.16);
+  color: #fbbf24;
+}
+.mi-icon.blue {
+  background: rgba(59, 130, 246, 0.16);
+  color: #93c5fd;
+}
+.mi-icon.slate {
+  background: rgba(148, 163, 184, 0.14);
+  color: #cbd5e1;
+}
+.mi-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.mi-text b {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+.mi-text i {
+  font-size: 12px;
+  font-style: normal;
+  color: #64748b;
+}
+.md-head,
+.md-sub,
+.md-foot {
+  flex: none;
+}
+.md-foot {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #334155;
+}
+.md-foot .logout {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: transparent;
+  color: #fca5a5;
+  font-size: 13px;
+  cursor: pointer;
+}
+.md-foot .logout:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+/* 设置页保存按钮与右列内容卡右缘对齐，避免孤立在左下角 */
+.settings-actions {
+  justify-content: flex-end;
+  padding: 2px 2px 0;
+}
+/* v03 P5 商品弹窗的遮罩是浅色（页面泛白），与收银台深色遮罩区分 */
+.mask.light-mask {
+  background: rgba(226, 232, 240, 0.68);
+}
+.orders-table .ops-links button:disabled,
+.tbl .ops-links button:disabled {
+  opacity: 0.55;
+  background: transparent;
+}
+
+/* v03 P5：筛选行内「类目管理」文字链（贴在类目下拉之后，与标题右侧按钮区分主次） */
+.link-btn {
+  height: 38px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: #0d9488;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.link-btn:hover {
+  text-decoration: underline;
+}
+/* 设置页「后厨档口」表格内的删除文字链（稿面为纯文字，非按钮） */
+.station-del {
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #dc2626;
+  font-size: 13px;
+  cursor: pointer;
+}
+.station-del:hover {
+  text-decoration: underline;
+}
+/* 订单/商品表的操作纯文字链：列宽收紧时不许把「重打」「退款」挤成一字一行 */
+.ops-links button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+/* 设置页「后厨档口」新建行：稿面三列同行，提示语与按钮在下方 */
+.station-form {
+  display: grid;
+  grid-template-columns: 24% 34% 30%;
+  gap: 12px 16px;
+  margin-top: 10px;
+}
+.station-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #475569;
+}
+.station-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+/* 顶栏常驻「退出登录」（v03 规则三）：收银台深色条与管理页浅色条各一套配色 */
+.sb-logout {
+  flex: none;
+  height: 28px;
+  padding: 0 10px;
+  margin-left: 4px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 6px;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.sb-logout:hover {
+  border-color: #ef4444;
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.12);
+}
+.statusbar.manage .sb-logout {
+  border-color: #cbd5e1;
+  color: #475569;
+}
+.statusbar.manage .sb-logout:hover {
+  border-color: #ef4444;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+/* ☰ 抽屉底部：退出登录已提到顶栏，这里只显示当前用户与去处提示 */
+.md-foot .md-user {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+.md-foot .md-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+/* 375–430px 窄屏顶栏：退出登录缩成「退出」、同步时间让位，保证状态条不撑破视口 */
+.sb-logout .lo-short {
+  display: none;
+}
+@media (max-width: 430px) {
+  .sb-logout {
+    margin-left: 2px;
+    padding: 0 8px;
+    height: 26px;
+    font-size: 12px;
+  }
+  .sb-logout .lo-full {
+    display: none;
+  }
+  .sb-logout .lo-short {
+    display: inline;
+  }
+  .statusbar .sb-sync {
+    display: none;
+  }
+  /* 手机收银台顶栏：店名让位给「今日已收 + ☰ + 退出」，避免店名被压成一个字 */
+  .statusbar .shop,
+  .sb-left .sep {
+    display: none;
+  }
+}
+
+
+/* 订单状态筛选胶囊（全部/挂单/已退款/已作废） */
+.status-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0 4px;
+}
+.status-chips button {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text-2);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.status-chips button.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+
+@media (max-width: 430px) {
+  .login-wrap { padding: 16px; }
+  .login-card { width: calc(100vw - 32px); padding: 22px 18px 20px; gap: 12px; }
+  .login-topbrand { left: 16px; top: 14px; }
+  .login-hint { font-size: 11.5px; }
+}
