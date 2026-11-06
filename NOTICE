@@ -1,0 +1,31 @@
+Posd · 单机收银（standalone POS）
+Copyright 2026 上海弈新信息科技有限公司
+
+本产品由 上海弈新信息科技有限公司 开发，依据 Apache License 2.0 授权发布。
+许可证全文见仓库根目录 LICENSE 文件。
+
+商标声明：本项目名称与标识不随代码授权。
+Apache License 2.0 **不授予商标使用权**，详见 TRADEMARK.md。
+
+第三方组件（运行时）：
+- modernc.org/sqlite            BSD-3-Clause
+- golang.org/x/text             BSD-3-Clause
+- golang.org/x/sys              BSD-3-Clause
+- modernc.org/libc              BSD-3-Clause
+- modernc.org/mathutil          BSD-3-Clause
+- modernc.org/memory            BSD-3-Clause
+- github.com/dustin/go-humanize MIT
+- github.com/google/uuid        BSD-3-Clause
+- github.com/mattn/go-isatty    MIT
+- github.com/ncruces/go-strftime MIT
+- github.com/remyoudompheng/bigfft BSD-3-Clause
+
+第三方组件（前端，运行时）：
+- vue                           MIT
+
+第三方组件（前端，仅构建期）：
+- vite                          MIT
+- @vitejs/plugin-vue            MIT
+- vitest / @vue/test-utils / jsdom  MIT
+
+完整依赖清单与许可证见发布包内的 SBOM.md。
