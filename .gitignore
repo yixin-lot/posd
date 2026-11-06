@@ -1,0 +1,33 @@
+# 构建产物
+/dist/
+/release/
+web/dist/
+internal/webui/dist/*
+!internal/webui/dist/index.html
+
+# 运行时数据
+/data/
+*.db
+*.db-shm
+*.db-wal
+/backups/
+/images/
+*.log
+
+# 依赖
+web/node_modules/
+node_modules/
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# 测试产物
+e2e-*.png
+d14-*.png
+tables-*.png
+settings-*.png
+*.tmp
