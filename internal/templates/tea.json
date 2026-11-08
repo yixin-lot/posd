@@ -1,0 +1,171 @@
+{
+  "id": "tea",
+  "name": "茶饮店",
+  "summary": "奶茶 / 果茶 / 咖啡 / 甜品，高峰高频点单，商品网格 6 列高密度。",
+  "categories": [
+    "奶茶",
+    "果茶",
+    "咖啡",
+    "甜品",
+    "小料"
+  ],
+  "products": [
+    {
+      "name": "珍珠奶茶",
+      "category": "奶茶",
+      "price": 1300,
+      "cost": 400,
+      "hot": true,
+      "barcode": "690010000001",
+      "name_en": "Pearl Milk Tea",
+      "category_en": "Milk Tea"
+    },
+    {
+      "name": "椰果奶茶",
+      "category": "奶茶",
+      "price": 1200,
+      "cost": 400,
+      "hot": true,
+      "barcode": "690010000002",
+      "name_en": "Coconut Jelly Milk Tea",
+      "category_en": "Milk Tea"
+    },
+    {
+      "name": "芋泥波波",
+      "category": "奶茶",
+      "price": 1600,
+      "cost": 500,
+      "hot": false,
+      "barcode": "690010000003",
+      "name_en": "Taro Bubble",
+      "category_en": "Milk Tea"
+    },
+    {
+      "name": "厚乳拿铁",
+      "category": "奶茶",
+      "price": 1500,
+      "cost": 500,
+      "hot": false,
+      "barcode": "690010000004",
+      "name_en": "Cream Latte",
+      "category_en": "Milk Tea"
+    },
+    {
+      "name": "杨枝甘露",
+      "category": "果茶",
+      "price": 1800,
+      "cost": 600,
+      "hot": true,
+      "barcode": "690010000005",
+      "name_en": "Mango Pomelo Sago",
+      "category_en": "Fruit Tea"
+    },
+    {
+      "name": "葡萄冻冻",
+      "category": "果茶",
+      "price": 1600,
+      "cost": 500,
+      "hot": false,
+      "barcode": "690010000006",
+      "name_en": "Grape Jelly",
+      "category_en": "Fruit Tea"
+    },
+    {
+      "name": "柠檬绿茶",
+      "category": "果茶",
+      "price": 1000,
+      "cost": 300,
+      "hot": false,
+      "barcode": "690010000007",
+      "name_en": "Lemon Green Tea",
+      "category_en": "Fruit Tea"
+    },
+    {
+      "name": "生椰拿铁",
+      "category": "咖啡",
+      "price": 1700,
+      "cost": 600,
+      "hot": true,
+      "barcode": "690010000008",
+      "name_en": "Coconut Latte",
+      "category_en": "Coffee"
+    },
+    {
+      "name": "美式咖啡",
+      "category": "咖啡",
+      "price": 1200,
+      "cost": 400,
+      "hot": false,
+      "barcode": "690010000009",
+      "name_en": "Americano",
+      "category_en": "Coffee"
+    },
+    {
+      "name": "焦糖玛奇朵",
+      "category": "咖啡",
+      "price": 1900,
+      "cost": 700,
+      "hot": false,
+      "barcode": "690010000010",
+      "name_en": "Caramel Macchiato",
+      "category_en": "Coffee"
+    },
+    {
+      "name": "海盐芝士",
+      "category": "甜品",
+      "price": 1800,
+      "cost": 700,
+      "hot": true,
+      "barcode": "690010000011",
+      "name_en": "Sea Salt Cheese",
+      "category_en": "Dessert"
+    },
+    {
+      "name": "蛋挞",
+      "category": "甜品",
+      "price": 600,
+      "cost": 200,
+      "hot": false,
+      "barcode": "690010000012",
+      "name_en": "Egg Tart",
+      "category_en": "Dessert"
+    },
+    {
+      "name": "椰果加料",
+      "category": "小料",
+      "price": 200,
+      "cost": 50,
+      "hot": false,
+      "barcode": "690010000013",
+      "name_en": "Extra Coconut Jelly",
+      "category_en": "Toppings"
+    },
+    {
+      "name": "珍珠加料",
+      "category": "小料",
+      "price": 200,
+      "cost": 50,
+      "hot": false,
+      "barcode": "690010000014",
+      "name_en": "Extra Tapioca",
+      "category_en": "Toppings"
+    }
+  ],
+  "layout": {
+    "columns": 6,
+    "hotFirst": true
+  },
+  "settings": {
+    "footer": "谢谢光临，欢迎再来",
+    "notes": "叫号取餐：小票订单号即取餐号；高峰建议收银员只点单，出品由后厨完成。"
+  },
+  "name_en": "Tea Shop",
+  "summary_en": "Milk tea / fruit tea / coffee / desserts; high-volume ordering with a dense 6-column grid.",
+  "categories_en": [
+    "Milk Tea",
+    "Fruit Tea",
+    "Coffee",
+    "Dessert",
+    "Toppings"
+  ]
+}

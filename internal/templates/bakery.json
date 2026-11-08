@@ -1,0 +1,139 @@
+{
+  "id": "bakery",
+  "name": "烘焙 / 面包",
+  "summary": "面包 / 蛋糕 / 饮品，按件与称重混合，商品卡片 4 列，小票简洁。",
+  "categories": [
+    "面包",
+    "蛋糕",
+    "饼干",
+    "饮品"
+  ],
+  "products": [
+    {
+      "name": "全麦吐司",
+      "category": "面包",
+      "price": 1200,
+      "cost": 500,
+      "hot": true,
+      "barcode": "690030000001",
+      "name_en": "Whole Wheat Toast",
+      "category_en": "Bread"
+    },
+    {
+      "name": "牛角包",
+      "category": "面包",
+      "price": 900,
+      "cost": 350,
+      "hot": true,
+      "barcode": "690030000002",
+      "name_en": "Croissant",
+      "category_en": "Bread"
+    },
+    {
+      "name": "肉松小贝",
+      "category": "面包",
+      "price": 1500,
+      "cost": 600,
+      "hot": false,
+      "barcode": "690030000003",
+      "name_en": "Pork Floss Bun",
+      "category_en": "Bread"
+    },
+    {
+      "name": "红豆面包",
+      "category": "面包",
+      "price": 800,
+      "cost": 300,
+      "hot": false,
+      "barcode": "690030000004",
+      "name_en": "Red Bean Bun",
+      "category_en": "Bread"
+    },
+    {
+      "name": "戚风蛋糕",
+      "category": "蛋糕",
+      "price": 2800,
+      "cost": 1200,
+      "hot": false,
+      "barcode": "690030000005",
+      "name_en": "Chiffon Cake",
+      "category_en": "Cake"
+    },
+    {
+      "name": "芝士蛋糕",
+      "category": "蛋糕",
+      "price": 3200,
+      "cost": 1500,
+      "hot": true,
+      "barcode": "690030000006",
+      "name_en": "Cheesecake",
+      "category_en": "Cake"
+    },
+    {
+      "name": "生日蛋糕 6 寸",
+      "category": "蛋糕",
+      "price": 12800,
+      "cost": 6000,
+      "hot": false,
+      "barcode": "690030000007",
+      "name_en": "6-inch Birthday Cake",
+      "category_en": "Cake"
+    },
+    {
+      "name": "曲奇饼干",
+      "category": "饼干",
+      "price": 1600,
+      "cost": 600,
+      "hot": false,
+      "barcode": "690030000008",
+      "name_en": "Butter Cookies",
+      "category_en": "Cookies"
+    },
+    {
+      "name": "蛋卷",
+      "category": "饼干",
+      "price": 1000,
+      "cost": 400,
+      "hot": false,
+      "barcode": "690030000009",
+      "name_en": "Egg Rolls",
+      "category_en": "Cookies"
+    },
+    {
+      "name": "美式咖啡",
+      "category": "饮品",
+      "price": 1200,
+      "cost": 400,
+      "hot": false,
+      "barcode": "690030000010",
+      "name_en": "Americano",
+      "category_en": "Drinks"
+    },
+    {
+      "name": "鲜榨果汁",
+      "category": "饮品",
+      "price": 1500,
+      "cost": 600,
+      "hot": false,
+      "barcode": "690030000011",
+      "name_en": "Fresh Juice",
+      "category_en": "Drinks"
+    }
+  ],
+  "layout": {
+    "columns": 4,
+    "hotFirst": true
+  },
+  "settings": {
+    "footer": "现烤现卖，新鲜每一天",
+    "notes": "称重商品：可在商品名标注克数（如「曲奇 100g」），按份售卖。"
+  },
+  "name_en": "Bakery",
+  "summary_en": "Bread / cakes / cookies / drinks; mixed piece and weight items, 4-column grid, concise receipts.",
+  "categories_en": [
+    "Bread",
+    "Cake",
+    "Cookies",
+    "Drinks"
+  ]
+}

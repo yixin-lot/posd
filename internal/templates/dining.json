@@ -1,0 +1,151 @@
+{
+  "id": "dining",
+  "name": "餐厅 / 快餐",
+  "summary": "正餐 / 快餐，桌台开台加菜，商品卡片 4 列大图，小票带桌号。",
+  "categories": [
+    "凉菜",
+    "热菜",
+    "主食",
+    "饮品",
+    "酒水"
+  ],
+  "products": [
+    {
+      "name": "拍黄瓜",
+      "category": "凉菜",
+      "price": 1200,
+      "cost": 300,
+      "hot": false,
+      "barcode": "690020000001",
+      "name_en": "Smashed Cucumber",
+      "category_en": "Cold Dishes"
+    },
+    {
+      "name": "凉拌木耳",
+      "category": "凉菜",
+      "price": 1500,
+      "cost": 400,
+      "hot": false,
+      "barcode": "690020000002",
+      "name_en": "Wood Ear Salad",
+      "category_en": "Cold Dishes"
+    },
+    {
+      "name": "招牌红烧肉",
+      "category": "热菜",
+      "price": 3800,
+      "cost": 1800,
+      "hot": true,
+      "barcode": "690020000003",
+      "name_en": "Braised Pork",
+      "category_en": "Hot Dishes"
+    },
+    {
+      "name": "宫保鸡丁",
+      "category": "热菜",
+      "price": 2800,
+      "cost": 1200,
+      "hot": true,
+      "barcode": "690020000004",
+      "name_en": "Kung Pao Chicken",
+      "category_en": "Hot Dishes"
+    },
+    {
+      "name": "鱼香肉丝",
+      "category": "热菜",
+      "price": 2600,
+      "cost": 1100,
+      "hot": false,
+      "barcode": "690020000005",
+      "name_en": "Yu-Shiang Shredded Pork",
+      "category_en": "Hot Dishes"
+    },
+    {
+      "name": "麻婆豆腐",
+      "category": "热菜",
+      "price": 1800,
+      "cost": 700,
+      "hot": false,
+      "barcode": "690020000006",
+      "name_en": "Mapo Tofu",
+      "category_en": "Hot Dishes"
+    },
+    {
+      "name": "番茄炒蛋",
+      "category": "热菜",
+      "price": 1600,
+      "cost": 600,
+      "hot": false,
+      "barcode": "690020000007",
+      "name_en": "Tomato & Egg",
+      "category_en": "Hot Dishes"
+    },
+    {
+      "name": "白米饭",
+      "category": "主食",
+      "price": 200,
+      "cost": 80,
+      "hot": false,
+      "barcode": "690020000008",
+      "name_en": "Steamed Rice",
+      "category_en": "Rice & Noodles"
+    },
+    {
+      "name": "蛋炒饭",
+      "category": "主食",
+      "price": 1500,
+      "cost": 500,
+      "hot": false,
+      "barcode": "690020000009",
+      "name_en": "Egg Fried Rice",
+      "category_en": "Rice & Noodles"
+    },
+    {
+      "name": "牛肉面",
+      "category": "主食",
+      "price": 2200,
+      "cost": 900,
+      "hot": true,
+      "barcode": "690020000010",
+      "name_en": "Beef Noodles",
+      "category_en": "Rice & Noodles"
+    },
+    {
+      "name": "可乐",
+      "category": "饮品",
+      "price": 600,
+      "cost": 300,
+      "hot": false,
+      "barcode": "690020000011",
+      "name_en": "Cola",
+      "category_en": "Drinks"
+    },
+    {
+      "name": "酸梅汤",
+      "category": "饮品",
+      "price": 800,
+      "cost": 300,
+      "hot": false,
+      "barcode": "690020000012",
+      "name_en": "Plum Juice",
+      "category_en": "Drinks"
+    }
+  ],
+  "layout": {
+    "columns": 4,
+    "hotFirst": true
+  },
+  "settings": {
+    "footer": "欢迎再次光临",
+    "notes": "桌台经营：点单时在购物车备注桌号，小票会打印桌号便于后厨上菜。"
+  },
+  "name_en": "Restaurant",
+  "summary_en": "Cold & hot dishes, staples and drinks; 5-column grid with table service.",
+  "categories_en": [
+    "Cold Dishes",
+    "Hot Dishes",
+    "Rice & Noodles",
+    "Drinks",
+    "Alcohol"
+  ]
+}

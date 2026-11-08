@@ -1,0 +1,149 @@
+{
+  "id": "bbq",
+  "name": "烧烤 / 串串",
+  "summary": "烤串 / 套餐 / 饮品，加购高频，商品网格 6 列，小票带桌号。",
+  "categories": [
+    "烤串",
+    "套餐",
+    "饮品",
+    "主食"
+  ],
+  "products": [
+    {
+      "name": "羊肉串",
+      "category": "烤串",
+      "price": 500,
+      "cost": 200,
+      "hot": true,
+      "barcode": "690040000001",
+      "name_en": "Lamb Skewers",
+      "category_en": "Skewers"
+    },
+    {
+      "name": "牛肉串",
+      "category": "烤串",
+      "price": 600,
+      "cost": 250,
+      "hot": true,
+      "barcode": "690040000002",
+      "name_en": "Beef Skewers",
+      "category_en": "Skewers"
+    },
+    {
+      "name": "鸡翅",
+      "category": "烤串",
+      "price": 900,
+      "cost": 400,
+      "hot": false,
+      "barcode": "690040000003",
+      "name_en": "Chicken Wings",
+      "category_en": "Skewers"
+    },
+    {
+      "name": "烤茄子",
+      "category": "烤串",
+      "price": 1000,
+      "cost": 400,
+      "hot": false,
+      "barcode": "690040000004",
+      "name_en": "Grilled Eggplant",
+      "category_en": "Skewers"
+    },
+    {
+      "name": "烤韭菜",
+      "category": "烤串",
+      "price": 600,
+      "cost": 200,
+      "hot": false,
+      "barcode": "690040000005",
+      "name_en": "Grilled Chives",
+      "category_en": "Skewers"
+    },
+    {
+      "name": "烤鱿鱼",
+      "category": "烤串",
+      "price": 1500,
+      "cost": 700,
+      "hot": true,
+      "barcode": "690040000006",
+      "name_en": "Grilled Squid",
+      "category_en": "Skewers"
+    },
+    {
+      "name": "烤生蚝",
+      "category": "烤串",
+      "price": 1200,
+      "cost": 500,
+      "hot": false,
+      "barcode": "690040000007",
+      "name_en": "Grilled Oysters",
+      "category_en": "Skewers"
+    },
+    {
+      "name": "双人套餐",
+      "category": "套餐",
+      "price": 6800,
+      "cost": 3200,
+      "hot": true,
+      "barcode": "690040000008",
+      "name_en": "Combo for Two",
+      "category_en": "Combos"
+    },
+    {
+      "name": "四人套餐",
+      "category": "套餐",
+      "price": 12800,
+      "cost": 6000,
+      "hot": false,
+      "barcode": "690040000009",
+      "name_en": "Combo for Four",
+      "category_en": "Combos"
+    },
+    {
+      "name": "啤酒",
+      "category": "饮品",
+      "price": 800,
+      "cost": 400,
+      "hot": false,
+      "barcode": "690040000010",
+      "name_en": "Beer",
+      "category_en": "Drinks"
+    },
+    {
+      "name": "酸梅汤",
+      "category": "饮品",
+      "price": 800,
+      "cost": 300,
+      "hot": false,
+      "barcode": "690040000011",
+      "name_en": "Plum Juice",
+      "category_en": "Drinks"
+    },
+    {
+      "name": "烤馒头片",
+      "category": "主食",
+      "price": 300,
+      "cost": 100,
+      "hot": false,
+      "barcode": "690040000012",
+      "name_en": "Grilled Bun Slices",
+      "category_en": "Staples"
+    }
+  ],
+  "layout": {
+    "columns": 6,
+    "hotFirst": true
+  },
+  "settings": {
+    "footer": "欢迎再次光临",
+    "notes": "高频加购：热销串类已置前两行；套餐商品一键多件。"
+  },
+  "name_en": "BBQ & Skewers",
+  "summary_en": "Skewers / combos / drinks; add-on heavy, 6-column grid, table number on receipts.",
+  "categories_en": [
+    "Skewers",
+    "Combos",
+    "Drinks",
+    "Staples"
+  ]
+}
